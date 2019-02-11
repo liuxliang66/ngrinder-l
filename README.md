@@ -1,113 +1,39 @@
-* nGrinder 3.4 has been released. See https://github.com/naver/ngrinder/releases
+### 背景
+研究了几天性能测试，发现挺好玩。也用了几个性能测试工具，虽然我现在对性能测试的结果还不太懂，甚至连入门算不上，但是不妨碍我要做一个自己的性能测试工具的想法。觉得还是要从以下几个方面去考虑（肯定不周全）：
+1. 应用以web形式呈现，可以管理测试结果，用户等。
+2. 最终测试结果要多样化，数据丰富详细。
+3. 功能可定制化
+4. 脚本录制简单，不需要繁琐操作
+5. 可进行迭代开发
+6. 最好不造轮子
 
-nGrinder 
-========
+暂时就这么多吧，网上有很多对ngrinder改造的例子，可以拿来直接用，我觉不是什么丢人的事，
+下面两个操作也借鉴和整理了网上的资源。
+### 操作
 
-[![Join the chat at https://gitter.im/naver/ngrinder](https://badges.gitter.im/naver/ngrinder.svg)](https://gitter.im/naver/ngrinder?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+#### 1.添加百分位RT统计，用于更快地定位问题
 
+所以最终选择ngrinder，在这里来实现，首先解决ngrinder的大缺陷，就是结果分析缺少百分位统计，那就给加上..
 
-nGrinder is a platform for stress tests that enables you to execute script creation, test execution, monitoring, and result report generator simultaneously. The open-source nGrinder offers easy ways to conduct stress tests by eliminating inconveniences and providing integrated environments.
+这里就不多说了，大概思想就是获取到测试系统被测试时的所有响应时间，也就是RT，然后将响应时间按照百分比去取，然后再展示出来,具体可参照一下帖子的做法,其实都是一个方法：
+> [性能测试工具 nGrinder 项目剖析及二次开发
+注册
+](https://testerhome.com/topics/4225) 
 
+> [nGrinder 改造 - 在详细报告里增加更多统计项](
+http://keithmo.me/post/2018/03/01/ngrinder-add-stats-in-report/)
 
-Want to know what's changed from the original grinder platform?
- * Checkout https://github.com/naver/ngrinder/wiki/Architecture !
+我现在使用的版本是3.4.2,这个方法依然可行，不知道为什么官方不改改，是没有人提交还是方法不对，从添加和修改的代码上来看，感觉这位大神写的没什么问题..
 
-To get to know what's different from previous ngrinder 2.0?
- * Checkout http://www.slideshare.net/junhoyoon3994/ngrinder-30-load-test-even-kids-can-do !
+#### 2.数据库迁移（h2-mysql）
+因为h2数据库数据库自身的问题，因此准备转到mysql中，让数据能够保存。
+这个迁移其实没什么难的，因为一般情况下，sql基本上是通用的，大家只要能弄到sql ,建库还是很easy的问题。
+要说明的是：
+1. 数据库默认名称----ngrinder
+2. 数据库默认用户----admin
+3. 数据库默认密码----admin
 
-To get started,
- * Checkout https://github.com/naver/ngrinder/wiki/User-Guide !
-
-You can find out what nGrinder looks like with screen-shot.
- * https://github.com/naver/ngrinder/wiki/Screen-Shot
-
-nGrinder consists of two major components. 
-
-nGrinder controller
- * a web application that enables the performance tester to create a test script and configure a test run
-
-nGrinder agent
-* a virtual user generator that creates loads.
-
-Features
---------
-
-* Use Jython script to create test scenario and generate stress in JVM using multiple agents.
-* Extend tests with custom libraries(jar, py). It's unlimited practically.
-* Provide web-based interface for project management, monitoring, result management and report management.
-* Run multiple tests concurrently. Assign the pre-installed multiple agents to maximize each agent's utilization.
-* Deploy agents on multiple network regions. Execute tests on various network locations
-* Embed Subversion to manage scripts.
-* Allow to monitor the state of agents generating stress and target machines receiving stress
-* Proven solution which is used to test huge systems having more than 100 million users in NHN.
+说起来简单，做起来就呵呵了。
+我这个版本的建库sql 放在docs文件夹中的mysql.txt文件里了，君可自取。
 
 
-Download
---------
-
-You can download the latest nGrinder in the following link. 
-* https://github.com/naver/ngrinder/releases
-
-Documentation
--------------
-You can find the installation guide at the following link.
-* https://github.com/naver/ngrinder/wiki/Installation-Guide
-
-You can find the user guide at the following location link.
-* https://github.com/naver/ngrinder/wiki/User-Guide
-
-
-
-Contribution?
--------------
-nGrinder welcomes any contributions from users. Please make all pull requests against master branches.
-* Clone the REPO : 'git clone git://github.com/naver/ngrinder.git'
-
-You can find general developer documents at the following link.
- * https://github.com/naver/ngrinder/wiki/Dev-Document
-
-Versioning
-----------
-
-For transparency and insight into our release cycle, and to strive to maintain backward compatibility, Bootstrap will be maintained under the Semantic Versioning guidelines to the greatest extent possible.
-
-Releases will be numbered in the following format:
-
-      `<major>.<minor>.<patch>`
-
-Release will be constructed based on the following guidelines:
-
-* Breaking backward compatibility bumps the major (and resets the minor and patch)
-* New additions without breaking backward compatibility bump the minor (and reset the patch)
-* Bug fixes and misc. changes bump the patch
-
-
-Q/A and Bug tracker
--------------------
-Found the apparent bug? Got a brilliant idea for an enhancement? Please create an issue here on GitHub so you can notify us!
-* https://github.com/naver/ngrinder/issues
-
-You can join our forum as well
-* Dev : http://ngrinder.642.n7.nabble.com/ngrinder-dev-f1.html 
-* User Forum : http://ngrinder.642.n7.nabble.com/ngrinder-user-f50.html
-* 中文论坛 (Chinese) http://ngrinder.642.n7.nabble.com/ngrinder-user-cn-f114.html
-* 한국어 유저 포럼 (Korean) http://ngrinder.642.n7.nabble.com/ngrinder-user-kr-f113.html
-* [![Developer chat at https://gitter.im/naver/ngrinder-kr](https://badges.gitter.im/naver/ngrinder-kr.svg)](https://gitter.im/naver/ngrinder-kr?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
----------------------
-
-     Licensed under the Apache License, Version 2.0 (the "License");
-     you may not use this file except in compliance with the License.
-     You may obtain a copy of the License at
-
-     http://www.apache.org/licenses/LICENSE-2.0
-
-     Unless required by applicable law or agreed to in writing, software
-     distributed under the License is distributed on an "AS IS" BASIS,
-     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     See the License for the specific language governing permissions and
-     limitations under the License. 
-      
-   
-nGrinder includes the following software and libraries as follows. See the LICENSE folder for the license and copyright details for each.
-* https://github.com/naver/ngrinder/tree/master/license
